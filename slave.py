@@ -30,9 +30,6 @@ def receive_and_process_states(sock, model):
 
     preds = predict(model, states)
     print(preds)
-    # response = pickle.dumps(preds)
-    # sock.sendall(len(response).to_bytes(4, byteorder="big"))
-    # sock.sendall(response)
     print("Slave: Sent processed data back to Master")
 
 
