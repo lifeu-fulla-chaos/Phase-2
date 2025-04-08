@@ -27,7 +27,6 @@ def receive_and_process_states(sock, model):
 
     states = pickle.loads(data)
     print("Slave: Received states from Master")
-
     preds = predict(model, states)
     print(preds)
     print("Slave: Sent processed data back to Master")

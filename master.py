@@ -34,7 +34,7 @@ def run_initial_trajectory(lorenz_system, steps=60):
     """Run the system for a specified number of steps"""
     print(f"Master: Running initial trajectory for {steps} steps...")
     state_history = lorenz_system.run_steps(0, steps)
-    state_history = np.round(state_history, 5)  # Clip to 5 decimal places
+    state_history = np.round(state_history, 5)  
     print(f"Master: Initial trajectory complete with {len(state_history)} states")
     return state_history
 
