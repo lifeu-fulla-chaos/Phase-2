@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.integrate import RK45
 
+
 class LorenzParameters:
     def __init__(self, sigma, rho, beta):
         self.sigma = sigma
@@ -10,7 +11,7 @@ class LorenzParameters:
 
 class LorenzSystem:
     def __init__(self, initial_state, params, dt=0.01):
-        self.params = params 
+        self.params = params
         self.initial_state = initial_state
         self.dt = dt
         self.current_state = self.initial_state.copy()
@@ -30,9 +31,9 @@ class LorenzSystem:
             lambda t, y: self.lorenz_equations(t, y, self.params),
             self.current_time,
             self.current_state,
-            t_bound=float('inf'),
+            t_bound=float("inf"),
             rtol=1e-6,
-            atol=1e-6
+            atol=1e-6,
         )
 
     def step(self):
@@ -55,6 +56,7 @@ class LorenzSystem:
         self.current_time = 0.0
         self.state_history = []
         self._setup_integrator()
+
 
 # def encrypt_message(message, key_state):
 #     key_bytes = np.abs(np.sin(key_state * 1000)).astype(np.uint8)
