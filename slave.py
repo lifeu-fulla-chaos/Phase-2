@@ -79,3 +79,7 @@ def main():
         ),
         k=(1.0, 1.0, 1.0),
     )
+    t_span = (0, master_copy.dt * 50)
+    t_eval = np.linspace(*t_span, 50)
+    
+
