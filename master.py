@@ -2,7 +2,7 @@ import numpy as np
 import socket
 from lorenz import LorenzParameters, LorenzSystem
 import pickle
-import random
+import time
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 max_retries = 5
@@ -19,9 +19,7 @@ parameters = LorenzParameters(
 
 initial_conditions = np.round(np.random.uniform(*IC_RANGE, size=3), 4)
 
-print(
-    f"Initial conditions: {initial_conditions}"
-)
+print(f"Initial conditions: {initial_conditions}")
 lorenz_system = LorenzSystem(
     initial_state=initial_conditions, params=parameters, dt=0.001
 )
@@ -35,12 +33,13 @@ def run_initial_trajectory(lorenz_system, steps=60):
     return state_history
 
 
-def send_and_receive_states(state_history, conn):
-    """Send the last 50 states to the slave and receive processed data"""   
-    last_states = state_history[-50:] 
-    last_states = np.append(
-        last_states, np.expand_dims(state_history[0], axis=0), axis=0
-    )
+def send_and_receive_states(state_history, conn, init=False):
+    """Send the last 50 states to the slave and receive processed data"""
+    last_states = state_history[-50:]
+    if init:
+        last_states = np.append(
+            last_states, np.expand_dims(state_history[0], axis=0), axis=0
+        )
 
     try:
         data = pickle.dumps(last_states)
@@ -58,12 +57,36 @@ def send_and_receive_states(state_history, conn):
             data += packet
 
         processed_data = pickle.loads(data)
-        print("Master: Received processed data from Slave")
+        print("Master: Received ACK from Slave")
         return processed_data
 
     except Exception as e:
         print(f"Master: Error during communication with Slave: {e}")
         return None
+
+
+def send_ack(conn):
+    """Send an acknowledgment to the master"""
+    ack = b"ACK"
+    ack = pickle.dumps(ack)
+    conn.sendall(len(ack).to_bytes(4, byteorder="big"))
+    conn.sendall(ack)
+    print("Slave: Sent ACK to Master")
+
+
+def receive_ack(conn):
+    """Receive an acknowledgment from the master"""
+    data_size = int.from_bytes(conn.recv(4), byteorder="big")
+    data = b""
+    while len(data) < data_size:
+        packet = conn.recv(data_size - len(data))
+        if not packet:
+            raise ConnectionError("Socket connection broken")
+        data += packet
+
+    ack = pickle.loads(data)
+    print("Slave: Received ACK from Master")
+    return ack
 
 
 def start_master_server(port):
@@ -77,9 +100,19 @@ def start_master_server(port):
         conn, addr = server_sock.accept()
         with conn:
             print(f"Master: Connected to {addr}")
-            state_history = run_initial_trajectory(lorenz_system, steps=60)
-            processed_data = send_and_receive_states(state_history, conn)
-            print(f"Master: Final processed data: {processed_data}")
+            state_history = run_initial_trajectory(lorenz_system, steps=10000)
+            print(lorenz_system.initial_state)
+            processed_data = send_and_receive_states(state_history, conn, True)
 
+            if processed_data == b"ACK":
+                with open("master.txt", "w") as f:
+                    while True:
+                        state_history = lorenz_system.run_steps(0, 50)
+                        f.write(f"{state_history[-1]}\n")
+                        send_ack(conn)
+                        ack = receive_ack(conn)
+                        if ack != b"ACK":
+                            break
+                        time.sleep(0.1)
 
 start_master_server(port)

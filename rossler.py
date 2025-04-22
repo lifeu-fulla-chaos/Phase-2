@@ -38,6 +38,7 @@ class RosslerSystem:
             atol=1e-8,
         )
         self.state_history = solution.y.T
+        self.initial_state = self.state_history[-1] 
         return self.state_history
 
     def reset(self):
