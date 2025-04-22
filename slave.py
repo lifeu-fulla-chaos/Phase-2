@@ -1,5 +1,7 @@
 from model import LSTM
 from lorenz import LorenzParameters, LorenzSystem
+from rossler import RosslerParameters, RosslerSystem
+from controller import BacksteppingController, dynamics
 import numpy as np
 import socket
 import torch
@@ -9,9 +11,29 @@ socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = 3000
 socket.connect(("localhost", port))
 
-model = LSTM(hidden_size=128, layers=2)
-model.load_state_dict(torch.load("92.pth"))
+model = LSTM(hidden_size=256, layers=8)
+model.load_state_dict(torch.load("model.pth"))
 model.eval()
+
+master_parameters = LorenzParameters(
+    sigma=10.0,
+    rho=28.0,
+    beta=8.0 / 3.0,
+)
+
+slave_parameters = RosslerParameters(
+    a=0.2,
+    b=0.2,
+    c=5.7,
+)
+
+IC_RANGE = (-30, 30)
+
+slave_system = RosslerSystem(
+    initial_state=np.random.uniform(*IC_RANGE, size=3),
+    params=slave_parameters,
+    dt=0.001,
+)
 
 
 def receive_and_process_states(sock, model):
@@ -28,8 +50,9 @@ def receive_and_process_states(sock, model):
     states = pickle.loads(data)
     print("Slave: Received states from Master")
     preds = predict(model, states)
-    print(preds)
+    print("predicted initial conditions", states[-1])
     print("Slave: Sent processed data back to Master")
+    return states[-1]
 
 
 def predict(model, states):
@@ -40,5 +63,19 @@ def predict(model, states):
     return prediction.squeeze(0).cpu().numpy()
 
 
-receive_and_process_states(socket, model)
-
+def main():
+    initial_conditions = receive_and_process_states(socket, model)
+    master_copy = LorenzSystem(
+        initial_state=initial_conditions, params=master_parameters, dt=0.001
+    )
+    controller = BacksteppingController(
+        p=(
+            master_parameters.sigma,
+            master_parameters.rho,
+            master_parameters.beta,
+            slave_parameters.a,
+            slave_parameters.b,
+            slave_parameters.c,
+        ),
+        k=(1.0, 1.0, 1.0),
+    )

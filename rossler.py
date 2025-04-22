@@ -1,26 +1,27 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+# import matplotlib.pyplot as plt
 
 
-class LorenzParameters:
-    def __init__(self, sigma, rho, beta):
-        self.sigma = sigma
-        self.rho = rho
-        self.beta = beta
+class RosslerParameters:
+    def __init__(self, a, b, c):
+        self.a = a
+        self.b = b
+        self.c = c
 
 
-class LorenzSystem:
+class RosslerSystem:
     def __init__(self, initial_state, params, dt=0.001):
         self.params = params
         self.initial_state = initial_state
         self.dt = dt
         self.state_history = []
 
-    def lorenz_equations(self, t, state):
+    def rossler_equations(self, t, state):
         x, y, z = state
-        dx = self.params.sigma * (y - x)
-        dy = x * (self.params.rho - z) - y
-        dz = x * y - self.params.beta * z
+        dx = -y - z
+        dy = x + self.params.a * y
+        dz = self.params.b + z * (x - self.params.c)
         return [dx, dy, dz]
 
     def run_steps(self, t, steps):
@@ -28,7 +29,7 @@ class LorenzSystem:
         t_eval = np.linspace(*t_span, steps)
 
         solution = solve_ivp(
-            fun=self.lorenz_equations,
+            fun=self.rossler_equations,
             t_span=t_span,
             y0=self.initial_state,
             t_eval=t_eval,
@@ -43,20 +44,16 @@ class LorenzSystem:
         self.state_history = []
 
 
-# # Example usage:
-# p = LorenzParameters(sigma=10, rho=28, beta=8 / 3)
-# a = LorenzSystem(initial_state=np.array([1.0, 1.0, 1.0]), params=p, dt=0.001)
+# p = RosslerParameters(a=0.2, b=0.2, c=5.7)
+# a = RosslerSystem(initial_state=np.array([1.0, 1.0, 1.0]), params=p, dt=0.001)
 
-# # Run the Lorenz system for 1000 steps
-# steps = 100000
-# trajectory = a.run_steps(steps)
+# steps = 1000000
+# trajectory = a.run_steps(0, steps)
 
-# # Extract x, y, z coordinates from the trajectory
 # x = trajectory[:, 0]
 # y = trajectory[:, 1]
 # z = trajectory[:, 2]
 
-# # Plot the Lorenz attractor
 # fig = plt.figure()
 # ax = fig.add_subplot(111, projection="3d")
 # ax.plot(x, y, z, lw=0.5)
@@ -65,6 +62,5 @@ class LorenzSystem:
 # ax.set_ylabel("Y")
 # ax.set_zlabel("Z")
 
-# # Save the plot to a file
 # plt.savefig("lorenz_attractor.png")
 # plt.show()

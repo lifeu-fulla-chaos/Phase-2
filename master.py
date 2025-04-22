@@ -9,21 +9,18 @@ max_retries = 5
 retry_delay = 5
 port = 3000
 
-RHO_RANGE = (20, 100)
-SIGMA_RANGE = (5, 45)
-BETA_RANGE = (0.1, 5)
 IC_RANGE = (-30, 30)
 
 parameters = LorenzParameters(
-    round(random.uniform(*SIGMA_RANGE), 4),
-    round(random.uniform(*RHO_RANGE), 4),
-    round(random.uniform(*BETA_RANGE), 4),
+    sigma=10.0,
+    rho=28.0,
+    beta=8.0 / 3.0,
 )
 
 initial_conditions = np.round(np.random.uniform(*IC_RANGE, size=3), 4)
 
 print(
-    f"Initial conditions: {initial_conditions, parameters.sigma, parameters.rho, parameters.beta}"
+    f"Initial conditions: {initial_conditions}"
 )
 lorenz_system = LorenzSystem(
     initial_state=initial_conditions, params=parameters, dt=0.001
@@ -34,14 +31,16 @@ def run_initial_trajectory(lorenz_system, steps=60):
     """Run the system for a specified number of steps"""
     print(f"Master: Running initial trajectory for {steps} steps...")
     state_history = lorenz_system.run_steps(0, steps)
-    state_history = np.round(state_history, 5)  
     print(f"Master: Initial trajectory complete with {len(state_history)} states")
     return state_history
 
 
 def send_and_receive_states(state_history, conn):
-    """Send the last 50 states to the slave and receive processed data"""
-    last_states = state_history[-50:]
+    """Send the last 50 states to the slave and receive processed data"""   
+    last_states = state_history[-50:] 
+    last_states = np.append(
+        last_states, np.expand_dims(state_history[0], axis=0), axis=0
+    )
 
     try:
         data = pickle.dumps(last_states)
