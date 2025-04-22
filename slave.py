@@ -82,8 +82,8 @@ def synchronize_states(u0, t_span, t_eval, controller):
         y0=u0,
         t_eval=t_eval,
         method="RK45",
-        rtol=1e-8,
-        atol=1e-8,
+        rtol=1e-9,
+        atol=1e-9,
     )
     return solution.t, solution.y[:3].T, solution.y[3:].T
 
@@ -121,7 +121,6 @@ def main():
     print(master_trajectory[-1], slave_trajectory[-1])
     plot_trajectories(timesteps, master_trajectory, slave_trajectory)
     send_ack(sock)
-    time.sleep(6)
     t_span = (0, master_copy.dt * 50)
     t_eval = np.linspace(*t_span, 50)
     with open("master-copy.txt", "w") as f:

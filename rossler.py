@@ -34,8 +34,8 @@ class RosslerSystem:
             y0=self.initial_state,
             t_eval=t_eval,
             method="RK45",
-            rtol=1e-8,
-            atol=1e-8,
+            rtol=1e-9,
+            atol=1e-9,
         )
         self.state_history = solution.y.T
         self.initial_state = self.state_history[-1] 

@@ -65,12 +65,16 @@ def send_and_receive_states(state_history, conn, init=False):
         return None
 
 
-def send_ack(conn):
+def send_ack(conn, text=None):
     """Send an acknowledgment to the master"""
     ack = b"ACK"
     ack = pickle.dumps(ack)
     conn.sendall(len(ack).to_bytes(4, byteorder="big"))
     conn.sendall(ack)
+    if text:
+        data = pickle.dumps(text)
+        conn.sendall(len(data).to_bytes(4, byteorder="big"))
+        conn.sendall(data)
     print("Slave: Sent ACK to Master")
 
 
@@ -87,6 +91,14 @@ def receive_ack(conn):
     ack = pickle.loads(data)
     print("Slave: Received ACK from Master")
     return ack
+
+def encrypt(text, state):
+    """Encrypt the text using the state"""
+    encrypted_text = []
+    for i, char in enumerate(text):
+        encrypted_char = chr(ord(char) ^ int(state[i]))
+        encrypted_text.append(encrypted_char)
+    return "".join(encrypted_text)
 
 
 def start_master_server(port):
@@ -107,12 +119,16 @@ def start_master_server(port):
             if processed_data == b"ACK":
                 with open("master.txt", "w") as f:
                     while True:
+                        text = input()
                         state_history = lorenz_system.run_steps(0, 50)
+                        if text.strip() != "":
+                            encrypted_text = encrypt(text, state_history[-1])
+                            send_ack(conn, encrypted_text)
+                        else:
+                            send_ack(conn)
                         f.write(f"{state_history[-1]}\n")
-                        send_ack(conn)
                         ack = receive_ack(conn)
                         if ack != b"ACK":
                             break
-                        time.sleep(0.1)
 
 start_master_server(port)
