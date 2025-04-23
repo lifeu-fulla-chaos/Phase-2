@@ -88,6 +88,16 @@ def synchronize_states(u0, t_span, t_eval, controller):
     return solution.t, solution.y[:3].T, solution.y[3:].T
 
 
+def decrypt_text(encrypted_text, state):
+    """Decrypt the text using the state"""
+    cipher = int(sum(state))
+    decrypted_text = []
+    for i, char in enumerate(encrypted_text):
+        decrypted_char = chr(char ^ cipher)
+        decrypted_text.append(decrypted_char)
+    return "".join(decrypted_text)
+
+
 def main():
     initial_conditions = receive_and_process_states(sock, model)
     master_copy = LorenzSystem(
@@ -133,8 +143,9 @@ def main():
                     raise ConnectionError("Socket connection broken")
                 data += packet
 
-            ack = pickle.loads(data)
-            if ack == b"ACK":
+            try:
+                payload = pickle.loads(data)
+                print(payload)
                 u0 = np.concatenate(
                     (
                         master_trajectory[-1],
@@ -144,8 +155,16 @@ def main():
                 _, master_trajectory, slave_trajectory = synchronize_states(
                     u0, t_span, t_eval, controller
                 )
+                if isinstance(payload, tuple) and len(payload) == 2:
+                    _, encrypted_text = payload
+                    print("Slave: Received states and encrypted text from Master")
+                    decrypted_text = decrypt_text(encrypted_text, master_trajectory[-1])
+                    print(f"Slave: Decrypted text: {decrypted_text}")
+
                 f.write(f"{master_trajectory[-1]}\n")
                 send_ack(sock)
+            except pickle.UnpicklingError:
+                print("Slave: Received non-pickle data, ignoring.")
 
 
 def plot_trajectories(time, master_trajectory, slave_trajectory):

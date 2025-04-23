@@ -66,16 +66,21 @@ def send_and_receive_states(state_history, conn, init=False):
 
 
 def send_ack(conn, text=None):
-    """Send an acknowledgment to the master"""
-    ack = b"ACK"
-    ack = pickle.dumps(ack)
-    conn.sendall(len(ack).to_bytes(4, byteorder="big"))
-    conn.sendall(ack)
-    if text:
-        data = pickle.dumps(text)
-        conn.sendall(len(data).to_bytes(4, byteorder="big"))
-        conn.sendall(data)
-    print("Slave: Sent ACK to Master")
+    try:
+        if text is not None:
+            payload = (b"ACK", text)
+            data = pickle.dumps(payload)
+            conn.sendall(len(data).to_bytes(4, byteorder="big"))
+            conn.sendall(data)
+            print("Master: Sent states and encrypted text to Slave")
+        else:
+            ack = b"ACK"
+            ack = pickle.dumps(ack)
+            conn.sendall(len(ack).to_bytes(4, byteorder="big"))
+            conn.sendall(ack)
+            print("Master: Sent ACK to Slave")
+    except Exception as e:
+        print(f"Master: Error in send_ack: {e}")
 
 
 def receive_ack(conn):
@@ -92,13 +97,16 @@ def receive_ack(conn):
     print("Slave: Received ACK from Master")
     return ack
 
+
 def encrypt(text, state):
     """Encrypt the text using the state"""
+    cipher = int(sum(state))
     encrypted_text = []
     for i, char in enumerate(text):
-        encrypted_char = chr(ord(char) ^ int(state[i]))
+        encrypted_char = ord(char) ^ cipher
         encrypted_text.append(encrypted_char)
-    return "".join(encrypted_text)
+    print("Encrypted text:", encrypted_text)
+    return encrypted_text
 
 
 def start_master_server(port):
@@ -119,9 +127,9 @@ def start_master_server(port):
             if processed_data == b"ACK":
                 with open("master.txt", "w") as f:
                     while True:
-                        text = input()
+                        text = input("Enter text: ").strip()
                         state_history = lorenz_system.run_steps(0, 50)
-                        if text.strip() != "":
+                        if text != "":
                             encrypted_text = encrypt(text, state_history[-1])
                             send_ack(conn, encrypted_text)
                         else:
@@ -130,5 +138,6 @@ def start_master_server(port):
                         ack = receive_ack(conn)
                         if ack != b"ACK":
                             break
+
 
 start_master_server(port)
