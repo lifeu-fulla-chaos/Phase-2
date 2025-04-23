@@ -265,7 +265,7 @@ def start_master_server(port):
                                 break
                                 
                             start_time = time.time()
-                            state_history = lorenz_system.run_steps(0, 50)
+                            state_history = lorenz_system.run_steps(0, 1000)
                             sync_time = time.time() - start_time
                             record_metrics("sync_times", sync_time)
                             

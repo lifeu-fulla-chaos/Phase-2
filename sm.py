@@ -302,8 +302,8 @@ def main():
         send_ack(sock)
         
         # Setup for message exchange
-        t_span = (0, master_copy.dt * 50)
-        t_eval = np.linspace(*t_span, 50)
+        t_span = (0, master_copy.dt * 1000)
+        t_eval = np.linspace(*t_span, 1000)
         
         message_count = 0
         with open("slave-copy.txt", "w") as f:

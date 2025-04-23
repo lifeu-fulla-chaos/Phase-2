@@ -1,62 +1,63 @@
 === SLAVE PERFORMANCE METRICS ===
 
 === TIMING METRICS ===
-Average synchronization time: 0.1784 seconds
-Average message receive time: 4.2709 seconds
+Average synchronization time: 0.2337 seconds
+Average message receive time: 24.0177 seconds
 Average decryption time: 0.000000 seconds
-Average prediction time: 0.1114 seconds
+Average prediction time: 0.0120 seconds
 
 === RESOURCE USAGE ===
-Average memory usage: 280.28 MB
+Average CPU usage: 87.37%
+Average memory usage: 280.52 MB
 
 === NETWORK METRICS ===
-Average throughput: 2.23 KB/s
+Average throughput: 2.76 KB/s
 
 === SYNCHRONIZATION QUALITY ===
-Average synchronization error: 1.234831
-Max synchronization error: 2.469164
-Min synchronization error: 0.000497
+Average synchronization error: 4.679496
+Max synchronization error: 9.357690
+Min synchronization error: 0.001303
 
 === DETAILED LOGS ===
 
 sync_times:
-  0: 0.3545501232147217
-  1: 0.0022902488708496094
+  0: 0.41594791412353516
+  1: 0.05153822898864746
 
 message_receive_times:
-  0: 0.2011110782623291
+  0: 0.16241836547851562
   1: 0.0
-  2: 15.01070785522461
+  2: 117.0783965587616
   3: 0.0
-  4: 6.142669439315796
+  4: 2.8475542068481445
 
 decryption_times:
   0: 0.0
 
 prediction_times:
-  0: 0.11136460304260254
+  0: 0.011993408203125
 
 cpu_usage:
   0: 0.0
-  1: 223.2
-  2: 103.6
+  1: 254.4
+  2: 136.8
   3: 0.0
-  4: 0.0
+  4: 133.0
   5: 0.0
 
 memory_usage:
-  0: 253.4375
-  1: 253.44921875
-  2: 293.69921875
-  3: 293.68359375
-  4: 293.6953125
-  5: 293.6953125
+  0: 253.39453125
+  1: 253.3984375
+  2: 294.08984375
+  3: 294.02734375
+  4: 294.10546875
+  5: 294.10546875
 
 throughput:
-  0: 6.681630925608254
-  1: 0.0035131171366875502
+  0: 8.273387039951148
+  1: 0.01192777161326347
   2: 0.0
 
 synchronization_error:
-  0: 2.469163912691442
-  1: 0.0004971578125212224
+  0: 9.357690357384223
+  1: 0.0013025212738393165
