@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import matplotlib.pyplot as plt
 from model import LSTM
 from lorenz import LorenzParameters, LorenzSystem
@@ -15,7 +18,7 @@ port = 3000
 sock.connect(("localhost", port))
 
 model = LSTM(hidden_size=256, layers=8)
-model.load_state_dict(torch.load("model.pth"))
+model.load_state_dict(torch.load("model.pth", map_location=torch.device("cpu")))
 model.eval()
 
 master_parameters = LorenzParameters(

@@ -1,0 +1,51 @@
+=== MASTER PERFORMANCE METRICS ===
+
+=== TIMING METRICS ===
+Average synchronization time: 0.1335 seconds
+Average message send/receive time: 0.5875 seconds
+Average encryption time: 0.0000 seconds
+
+=== RESOURCE USAGE ===
+Average CPU usage: 0.00%
+Average memory usage: 60.07 MB
+
+=== NETWORK METRICS ===
+Average throughput: 0.38 KB/s
+
+=== ENCRYPTION METRICS ===
+Average entropy: 3.1069 bits
+Max entropy: 3.1069 bits
+Min entropy: 3.1069 bits
+
+=== DETAILED LOGS ===
+
+sync_times:
+  0: 0.2653477191925049
+  1: 0.0017421245574951172
+
+message_send_times:
+  0: 1.7590057849884033
+  1: 0.0
+  2: 0.0034186840057373047
+
+encryption_times:
+  0: 0.0
+
+cpu_usage:
+  0: 0.0
+  1: 0.0
+  2: 0.0
+  3: 0.0
+
+memory_usage:
+  0: 60.41796875
+  1: 59.90625
+  2: 59.9765625
+  3: 59.9765625
+
+throughput:
+  0: 0.7639258559964651
+  1: 0
+
+entropy_values:
+  0: 3.106890595608518

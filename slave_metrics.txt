@@ -1,0 +1,62 @@
+=== SLAVE PERFORMANCE METRICS ===
+
+=== TIMING METRICS ===
+Average synchronization time: 0.1784 seconds
+Average message receive time: 4.2709 seconds
+Average decryption time: 0.000000 seconds
+Average prediction time: 0.1114 seconds
+
+=== RESOURCE USAGE ===
+Average memory usage: 280.28 MB
+
+=== NETWORK METRICS ===
+Average throughput: 2.23 KB/s
+
+=== SYNCHRONIZATION QUALITY ===
+Average synchronization error: 1.234831
+Max synchronization error: 2.469164
+Min synchronization error: 0.000497
+
+=== DETAILED LOGS ===
+
+sync_times:
+  0: 0.3545501232147217
+  1: 0.0022902488708496094
+
+message_receive_times:
+  0: 0.2011110782623291
+  1: 0.0
+  2: 15.01070785522461
+  3: 0.0
+  4: 6.142669439315796
+
+decryption_times:
+  0: 0.0
+
+prediction_times:
+  0: 0.11136460304260254
+
+cpu_usage:
+  0: 0.0
+  1: 223.2
+  2: 103.6
+  3: 0.0
+  4: 0.0
+  5: 0.0
+
+memory_usage:
+  0: 253.4375
+  1: 253.44921875
+  2: 293.69921875
+  3: 293.68359375
+  4: 293.6953125
+  5: 293.6953125
+
+throughput:
+  0: 6.681630925608254
+  1: 0.0035131171366875502
+  2: 0.0
+
+synchronization_error:
+  0: 2.469163912691442
+  1: 0.0004971578125212224
